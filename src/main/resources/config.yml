@@ -1,0 +1,4 @@
+# perfectUnityPlugin configuration
+
+max-homes: -1 # -1 = unlimited, or set a number to limit
+gui-size: 36 # size of the GUI (Must be divisible by 9)

@@ -1,0 +1,14 @@
+name: perfectUnityPlugin
+version: 1.2.1
+main: com.anon.perfectUnityPlugin.perfectUnityPlugin
+api-version: 1.20
+commands:
+  sethome:
+    description: Set a new Home
+    usage: /sethome <name> [overwrite]
+  home:
+    description: Open the Home Manager GUI or Teleport to a Home using the [name]
+    usage: /home [name]
+permissions:
+  perfectUnityPlugin.use:
+    default: true
