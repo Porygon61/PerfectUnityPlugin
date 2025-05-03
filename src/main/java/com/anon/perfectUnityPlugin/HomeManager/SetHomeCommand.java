@@ -5,14 +5,18 @@ import org.bukkit.Location;
 import org.bukkit.command.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SetHomeCommand implements CommandExecutor {
 
+    private final perfectUnityPlugin plugin;
+    public SetHomeCommand(perfectUnityPlugin plugin) { this.plugin = plugin; }
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
         if (args.length < 1) {
@@ -24,12 +28,11 @@ public class SetHomeCommand implements CommandExecutor {
         boolean isOverwrite = args.length > 1 && args[1].equalsIgnoreCase("overwrite");
 
         //Load player file
-        File file = new File(perfectUnityPlugin.getInstance().getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration data = plugin.getHomeData(player);
 
         //Check max homes if not overwriting
         if (!data.contains(homeName) && !isOverwrite) {
-            int maxHomes = perfectUnityPlugin.getInstance().getConfig().getInt("max-homes", -1);
+            int maxHomes = plugin.getMaxHomes();
             if (maxHomes != -1 && data.getKeys(false).size() >= maxHomes) {
                 player.sendMessage("You reached the max number of Home Slots");
                 return true;
@@ -52,7 +55,7 @@ public class SetHomeCommand implements CommandExecutor {
         data.set(homeName + ".pitch", loc.getPitch());
 
         try {
-            data.save(file);
+            data.save(plugin.getHomeFile(player));
         } catch (IOException e) {
             e.printStackTrace();
             player.sendMessage("Failed to save Home.");

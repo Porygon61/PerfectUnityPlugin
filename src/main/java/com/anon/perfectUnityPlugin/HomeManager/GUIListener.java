@@ -14,6 +14,10 @@ import java.io.File;
 
 public class GUIListener implements Listener {
 
+    private final perfectUnityPlugin plugin;
+
+    public GUIListener(perfectUnityPlugin plugin) { this.plugin = plugin; }
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
@@ -24,32 +28,21 @@ public class GUIListener implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!clicked.hasItemMeta()) return;
 
+        if (clicked.getType() == Material.ARROW) {
+            String title = e.getView().getTitle();
+            String[] parts = title.split(" ");
+            int current = Integer.parseInt(parts[3].split("/")[0]) - 1;
+            int newPage = clicked.getItemMeta().getDisplayName().contains("Previous") ? current - 1 : current + 1;
+            plugin.getServer().getScheduler().runTask(plugin, () ->
+                    new HomeCommand(plugin).openHomeGUI(player, plugin.getHomeGUIs().get(player.getUniqueId()), newPage));
+            return;
+        }
 
         String homeName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
-        YamlConfiguration data = perfectUnityPlugin.getInstance().getHomeGUIs().get(player.getUniqueId());
-
+        YamlConfiguration data = plugin.getHomeGUIs().get(player.getUniqueId());
 
         // Make sure the clicked name exists as a home
         if (data == null || !data.contains(homeName)) return;
-
-        String title = e.getView().getTitle();
-        if (clicked.getType() == Material.ARROW) {
-            if (clicked.getItemMeta().getDisplayName().contains("Previous")) {
-                int currentPage = Integer.parseInt(title.split(" ")[2].split("/")[0]) - 1;
-                perfectUnityPlugin.getInstance().getServer().getScheduler().runTask(
-                        perfectUnityPlugin.getInstance(),
-                        () -> new HomeCommand().openHomeGUI(player, perfectUnityPlugin.getInstance().getHomeGUIs().get(player.getUniqueId()), currentPage - 1)
-                );
-                return;
-            } else if (clicked.getItemMeta().getDisplayName().contains("Next")) {
-                int currentPage = Integer.parseInt(title.split(" ")[2].split("/")[0]) - 1;
-                perfectUnityPlugin.getInstance().getServer().getScheduler().runTask(
-                        perfectUnityPlugin.getInstance(),
-                        () -> new HomeCommand().openHomeGUI(player, perfectUnityPlugin.getInstance().getHomeGUIs().get(player.getUniqueId()), currentPage + 1)
-                );
-                return;
-            }
-        }
 
 
         switch (e.getClick()) {
@@ -81,37 +74,42 @@ public class GUIListener implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!clicked.hasItemMeta()) return;
 
-        String homeName = perfectUnityPlugin.getInstance().getEditSessions().get(player.getUniqueId());
+        String homeName = plugin.getEditSessions().get(player.getUniqueId());
         if (homeName == null) return;
 
-        File file = new File(perfectUnityPlugin.getInstance().getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+
+        YamlConfiguration data = plugin.getHomeData(player);
 
         String action = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
 
         switch (action) {
             case "Icon":
                 player.closeInventory();
-                IconEditGUI.open(player, homeName);
+                IconEditGUI.openIconEditGUI(player, 0);
                 break;
 
             case "Rename":
                 player.closeInventory();
                 player.sendMessage(ChatColor.AQUA + "Type a new name in chat to rename home '" + homeName + "'");
-                perfectUnityPlugin.getInstance().getRenameQueue().put(player.getUniqueId(), homeName);
+                plugin.getRenameQueue().put(player.getUniqueId(), homeName);
                 break;
 
             case "Delete":
                 data.set(homeName, null);
-                perfectUnityPlugin.getInstance().getEditSessions().remove(player.getUniqueId());
+                plugin.getEditSessions().remove(player.getUniqueId());
                 try {
-                    data.save(file);
+                    data.save(plugin.getHomeFile(player));
                     player.sendMessage(ChatColor.RED + "Deleted home '" + homeName + "'");
                 } catch (Exception ex) {
                     player.sendMessage(ChatColor.DARK_RED + "Something went wrong while deleting.");
                 }
                 player.closeInventory();
                 break;
+            case "Overwrite Location":
+                player.performCommand("sethome " + homeName + " overwrite");
+                player.closeInventory();
+                break;
+
         }
     }
 
@@ -123,11 +121,11 @@ public class GUIListener implements Listener {
 
         ItemStack clicked = e.getCurrentItem();
 
-        String homeName = perfectUnityPlugin.getInstance().getEditSessions().get(player.getUniqueId());
+        String homeName = plugin.getIconSessions().get(player.getUniqueId());
         if (homeName == null) return;
 
-        File file = new File(perfectUnityPlugin.getInstance().getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+
+        YamlConfiguration data = plugin.getHomeData(player);
 
         if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!clicked.hasItemMeta()) return;
@@ -150,13 +148,13 @@ public class GUIListener implements Listener {
         data.set(homeName + ".icon", selectedMaterial.name());
 
         try {
-            data.save(file);
+            data.save(plugin.getHomeFile(player));
             player.sendMessage(ChatColor.GREEN + "Icon updated for home '" + homeName + "'");
         } catch (Exception ex) {
             player.sendMessage(ChatColor.DARK_RED + "Something went wrong while saving.");
         }
 
-        perfectUnityPlugin.getInstance().getIconSessions().remove(player.getUniqueId());
+        plugin.getIconSessions().remove(player.getUniqueId());
 
         player.closeInventory();
     }

@@ -48,7 +48,7 @@ public class JoinListener implements Listener {
         //Last Death Location
         Location deathLoc = player.getLastDeathLocation();
         String coords = null;
-        String deathWorld = deathLoc.getWorld().getName();
+        String deathWorld = deathLoc == null ? "No Death yet" : deathLoc.getWorld().getName();
         if (deathLoc != null) {
             int x = deathLoc.getBlockX();
             int y = deathLoc.getBlockY();

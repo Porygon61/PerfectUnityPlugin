@@ -11,9 +11,9 @@ import java.time.format.DateTimeFormatter;
 
 public class Clock extends BukkitRunnable {
 
-    private final JavaPlugin plugin;
     private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    private JavaPlugin plugin;
     public Clock(JavaPlugin plugin) {
         this.plugin = plugin;
     }

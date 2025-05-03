@@ -13,15 +13,19 @@ import java.util.UUID;
 
 public class ChatListener implements Listener {
 
+    private final perfectUnityPlugin plugin;
+
+    public ChatListener(perfectUnityPlugin plugin) { this.plugin = plugin; }
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (!perfectUnityPlugin.getInstance().getRenameQueue().containsKey(uuid)) return;
+        if (!plugin.getRenameQueue().containsKey(uuid)) return;
 
         e.setCancelled(true);
 
-        String oldName = perfectUnityPlugin.getInstance().getRenameQueue().remove(uuid);
+        String oldName = plugin.getRenameQueue().remove(uuid);
         String newName = e.getMessage().trim().toLowerCase();
 
         if (newName.isEmpty() || newName.contains(" ")) {
@@ -29,8 +33,8 @@ public class ChatListener implements Listener {
             return;
         }
 
-        File file = new File(perfectUnityPlugin.getInstance().getDataFolder(), "homes/" + uuid + ".yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+
+        YamlConfiguration data = plugin.getHomeData(player);
 
         if (!data.contains(oldName)) {
             player.sendMessage(ChatColor.RED + "Home no longer exists.");
@@ -46,7 +50,7 @@ public class ChatListener implements Listener {
         data.set(oldName, null);
 
         try {
-            data.save(file);
+            data.save(plugin.getHomeFile(player));
             player.sendMessage(ChatColor.GREEN + "Home renamed to '" + newName + "'");
         } catch (Exception ex) {
             player.sendMessage(ChatColor.DARK_RED + "Something went wrong saving the rename.");

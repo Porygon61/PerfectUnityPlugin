@@ -1,10 +1,6 @@
 # Changelog
 
-## [Unreleased]
-### Warp and Spawn Update
-- Warps
-- Spawn Area
-
+# [...]
 
 ## [1.2.1] - 2025-04-26
 ### Scoreboard Update

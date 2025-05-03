@@ -19,22 +19,30 @@ import java.util.Map;
 public class perfectUnityPlugin extends JavaPlugin {
 
     private static perfectUnityPlugin instance;
+    private int itemsPerPage;
+    private int maxPages;
+    private int guiSize;
+    private int maxHomes;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig(); // Creates the config.yml file if missing
 
+        itemsPerPage = getConfig().getInt("homes.gui.pagination.items-per-page", 36);
+        maxHomes = getConfig().getInt("homes.max-homes", -1);
+        guiSize = getConfig().getInt("homes.gui.gui-size", 45);
+
         //HomeManager
-        getCommand("sethome").setExecutor(new SetHomeCommand());
+        getCommand("sethome").setExecutor(new SetHomeCommand(this));
         getCommand("sethome").setTabCompleter(new HomeTabCompleter(this));
 
-        getCommand("home").setExecutor(new HomeCommand());
+        getCommand("home").setExecutor(new HomeCommand(this));
         getCommand("home").setTabCompleter(new HomeTabCompleter(this));
 
 
-        getServer().getPluginManager().registerEvents(new GUIListener(), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
 
 
         //Scoreboard
@@ -51,6 +59,25 @@ public class perfectUnityPlugin extends JavaPlugin {
         if (!file.exists()) return null;
         return YamlConfiguration.loadConfiguration(file);
     }
+
+    public File getHomeFile(Player player) {
+        File file = new File(getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
+        if (!file.exists()) return null;
+        return file;
+    }
+
+    public int getItemsPerPage() {
+        return itemsPerPage;
+    }
+
+    public int getGuiSize() {
+        return guiSize;
+    }
+
+    public int getMaxHomes() {
+        return maxHomes;
+    }
+
 
     private final Map<UUID, YamlConfiguration> homeGUIs = new HashMap<>();
     public Map<UUID, YamlConfiguration> getHomeGUIs() {

@@ -4,10 +4,12 @@ import com.anon.perfectUnityPlugin.perfectUnityPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 public class IconEditGUI {
 
     private static final List<Material> ICONS = new ArrayList<>();
+    private static final int ITEMS_PER_PAGE = perfectUnityPlugin.getInstance().getItemsPerPage();
+    private static final int GUI_SIZE = perfectUnityPlugin.getInstance().getGuiSize();
 
     static {
         for (Material mat : Material.values()) {
@@ -25,30 +29,53 @@ public class IconEditGUI {
     }
 
     public static void openIconEditGUI(Player player, int page) {
-        int itemsPerPage = 45;
-        int totalPages = (int) Math.ceil(ICONS.size() / (double) itemsPerPage);
+        OfflinePlayer[] players = Bukkit.getOfflinePlayers();
+        int iconPages = (int) Math.ceil(ICONS.size() / (double) ITEMS_PER_PAGE);
+        int headPages = (int) Math.ceil(players.length / (double) ITEMS_PER_PAGE);
+        int totalPages = iconPages + headPages;
 
-        Inventory inv = Bukkit.createInventory(null, 54,
-                "Choose Icon: Page " + (page + 1) + "/" + totalPages);
+        Inventory inv = Bukkit.createInventory(null, GUI_SIZE,
+                "§2Choose Icon: Page " + (page + 1) + "/" + totalPages);
 
-        int start = page * itemsPerPage;
-        int end = Math.min(start + itemsPerPage, ICONS.size());
+        if  (page < iconPages) {
+            // ICON
+            int start = page * ITEMS_PER_PAGE;
+            int end = Math.min(start + ITEMS_PER_PAGE, ICONS.size());
 
-        for (int i = start; i < end; i++) {
-            Material mat = ICONS.get(i);
-            ItemStack item = new ItemStack(mat);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + mat.name());
-            item.setItemMeta(meta);
-            inv.setItem(i - start, item);
+            for (int i = start; i < end; i++) {
+                Material mat = ICONS.get(i);
+                ItemStack item = new ItemStack(mat);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(ChatColor.YELLOW + mat.name());
+                item.setItemMeta(meta);
+                inv.setItem(i - start, item);
+            }
+        } else {
+            // HEAD
+            int headPage = page - iconPages;
+            int start = headPage * ITEMS_PER_PAGE;
+            int end = Math.min(start + ITEMS_PER_PAGE, players.length);
+
+            for (int i = start; i < end; i++) {
+                OfflinePlayer p = players[i];
+                ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+                SkullMeta meta = (SkullMeta) head.getItemMeta();
+                if (meta == null) continue;
+                meta.setOwningPlayer(p);
+                meta.setDisplayName("§e" + (p.getName() != null ? p.getName() : "Unknown"));
+                head.setItemMeta(meta);
+                inv.setItem(i - start, head);
+            }
         }
 
+        // NAV
+        int bottomRowStart = GUI_SIZE - 9;
         if (page > 0) {
-            inv.setItem(45, navItem(Material.ARROW, "§aPrevious Page"));
+            inv.setItem(bottomRowStart, navItem(Material.ARROW, "§aPrevious Page"));
         }
 
-        if (end < ICONS.size()) {
-            inv.setItem(53, navItem(Material.ARROW, "§aNext Page"));
+        if (page < totalPages - 1) {
+            inv.setItem(bottomRowStart + 8, navItem(Material.ARROW, "§aNext Page"));
         }
 
         player.openInventory(inv);
@@ -64,7 +91,7 @@ public class IconEditGUI {
 
     // Shortcuts for easier external calls
     public static void open(Player player, String homeName) {
-        perfectUnityPlugin.getInstance().getIconSessions().put(player.getUniqueId(), homeName);
         openIconEditGUI(player, 0);
+        perfectUnityPlugin.getInstance().getIconSessions().put(player.getUniqueId(), homeName);
     }
 }

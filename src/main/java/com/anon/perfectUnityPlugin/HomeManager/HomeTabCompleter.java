@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +21,11 @@ public class HomeTabCompleter implements TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) return Collections.emptyList();
 
         if (args.length == 1) {
-            YamlConfiguration data = plugin.getHomeData(player); // your method
+            YamlConfiguration data = plugin.getHomeData(player);
             if (data == null) return Collections.emptyList();
 
             String input = args[0].toLowerCase();

@@ -8,18 +8,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
 
 public class HomeCommand implements CommandExecutor {
 
+    private final perfectUnityPlugin plugin;
+
+    public HomeCommand(perfectUnityPlugin plugin) { this.plugin = plugin; }
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        File file = new File(perfectUnityPlugin.getInstance().getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration data = plugin.getHomeData(player);
 
         if (args.length == 1) {
             //Direct teleport: /home <name>
@@ -51,34 +55,33 @@ public class HomeCommand implements CommandExecutor {
             double x = data.getDouble(homeName + ".x");
             double y = data.getDouble(homeName + ".y");
             double z = data.getDouble(homeName + ".z");
-            //float yaw = (float) data.getDouble(homeName + ".yaw");
-            //float pitch = (float) data.getDouble(homeName + ".pitch"); set to 0 to look straight ahead
+            float yaw = (float) data.getDouble(homeName + ".yaw");
+            //float pitch = (float) data.getDouble(homeName + ".pitch");
 
-            return new Location(world, x, y, z, 0, 0);
+            return new Location(world, x, y, z, yaw, 0);
         } catch (Exception e) {
             return null;
         }
     }
 
     public void openHomeGUI(Player player, YamlConfiguration data, int page) {
-        int maxHomes = perfectUnityPlugin.getInstance().getConfig().getInt("max-homes", -1);
         List<String> allHomes = (data == null) ? new ArrayList<>() : new ArrayList<>(data.getKeys(false));
 
-        int size =  perfectUnityPlugin.getInstance().getConfig().getInt("gui-size", 54);
-        int homesPerPage = size - 9;
+        int size =  plugin.getConfig().getInt("gui-size", 54);
+        int homesPerPage = plugin.getItemsPerPage();
         int totalPages = (int) Math.ceil(allHomes.size() / (double) homesPerPage);
 
         page = Math.max(0, Math.min(page, totalPages - 1));
 
-        Inventory gui = Bukkit.createInventory(null, size, "Your Homes: Page " + (page + 1) + "/ " + totalPages);
+        Inventory gui = Bukkit.createInventory(null, size, "Your Homes: Page " + (page + 1) + "/" + totalPages);
         int start = page * homesPerPage;
         int end = Math.min(start + homesPerPage, allHomes.size());
 
         // Place the home icons
-        for (int i = 0; i < start && i < end; i++) {
+        for (int i = start; i < end; i++) {
             String homeName = allHomes.get(i);
             // Get icon from YAML
-            String iconName = data.getString(homeName + ".icon", "BEACON");
+            String iconName = data.getString(homeName + ".icon", "BEACON"); //Eventually swap with custom head
             Material iconMat = Material.matchMaterial(iconName);
             if (iconMat == null || !iconMat.isItem()) iconMat = Material.BEACON;
 
@@ -87,6 +90,7 @@ public class HomeCommand implements CommandExecutor {
             meta.setDisplayName(ChatColor.GOLD + homeName);
             Location loc = getHomeLocation(data, homeName);
             if (loc == null) continue;
+            meta.setLore(null);
             meta.setLore(List.of(
                     ChatColor.GREEN + "X: " + ChatColor.WHITE + String.format("%.1f", loc.getX()),
                     ChatColor.GREEN + "Y: " + ChatColor.WHITE + String.format("%.1f", loc.getY()),
@@ -95,7 +99,8 @@ public class HomeCommand implements CommandExecutor {
                     ChatColor.GRAY + "Right-click to edit"
             ));
             item.setItemMeta(meta);
-            gui.setItem(i, item);
+            int slot = i - start;
+            gui.setItem(slot, item);
         }
 
         // Navigation arrows
