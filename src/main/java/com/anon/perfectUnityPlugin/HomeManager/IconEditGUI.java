@@ -35,7 +35,7 @@ public class IconEditGUI {
         int totalPages = iconPages + headPages;
 
         Inventory inv = Bukkit.createInventory(null, GUI_SIZE,
-                "§2Choose Icon: Page " + (page + 1) + "/" + totalPages);
+                ChatColor.GREEN + "Choose Icon: Page " + (page + 1) + "/" + totalPages);
 
         if  (page < iconPages) {
             // ICON
