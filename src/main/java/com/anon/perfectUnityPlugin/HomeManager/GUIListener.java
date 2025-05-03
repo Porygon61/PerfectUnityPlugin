@@ -85,7 +85,7 @@ public class GUIListener implements Listener {
         switch (action) {
             case "Icon":
                 player.closeInventory();
-                IconEditGUI.openIconEditGUI(player, 0);
+                IconEditGUI.open(player, homeName);
                 break;
 
             case "Rename":
@@ -116,7 +116,7 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onIconEditClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
-        if (!e.getView().getTitle().startsWith(ChatColor.stripColor("Choose Icon:"))) return;
+        if (!ChatColor.stripColor(e.getView().getTitle()).startsWith("Choose Icon: ")) return;
         e.setCancelled(true);
 
         ItemStack clicked = e.getCurrentItem();
@@ -130,7 +130,7 @@ public class GUIListener implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!clicked.hasItemMeta()) return;
 
-        String title = e.getView().getTitle();
+        String title = ChatColor.stripColor(e.getView().getTitle());
         int currentPage = Integer.parseInt(title.split(" ")[3].split("/")[0]) - 1;
 
         if (clicked.getType() == Material.ARROW) {
