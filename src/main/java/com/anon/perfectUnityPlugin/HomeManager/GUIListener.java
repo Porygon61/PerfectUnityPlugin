@@ -1,7 +1,6 @@
 package com.anon.perfectUnityPlugin.HomeManager;
 
 import com.anon.perfectUnityPlugin.perfectUnityPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -86,7 +85,7 @@ public class GUIListener implements Listener {
         switch (action) {
             case "Icon":
                 player.closeInventory();
-                IconEditGUI.open(player, homeName);
+                IconEditGUI.openIconEditGUI(player, 0);
                 break;
 
             case "Rename":
@@ -117,12 +116,10 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onIconEditClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
-        if (!ChatColor.stripColor(e.getView().getTitle()).startsWith("Choose Icon: ")) return;
+        if (!e.getView().getTitle().startsWith(ChatColor.stripColor("Choose Icon:"))) return;
         e.setCancelled(true);
 
         ItemStack clicked = e.getCurrentItem();
-
-        Bukkit.getLogger().info("DEBUG: Icon session for " + player.getName() + ": " + plugin.getIconSessions().get(player.getUniqueId()));
 
         String homeName = plugin.getIconSessions().get(player.getUniqueId());
         if (homeName == null) return;
@@ -133,7 +130,7 @@ public class GUIListener implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!clicked.hasItemMeta()) return;
 
-        String title = ChatColor.stripColor(e.getView().getTitle());
+        String title = e.getView().getTitle();
         int currentPage = Integer.parseInt(title.split(" ")[3].split("/")[0]) - 1;
 
         if (clicked.getType() == Material.ARROW) {
