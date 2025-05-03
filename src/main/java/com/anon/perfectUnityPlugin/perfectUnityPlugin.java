@@ -1,5 +1,7 @@
 package com.anon.perfectUnityPlugin;
 
+import com.anon.perfectUnityPlugin.Heads.HeadsCommand;
+import com.anon.perfectUnityPlugin.Heads.HeadsGUIListener;
 import com.anon.perfectUnityPlugin.HomeManager.*;
 import com.anon.perfectUnityPlugin.HomeManager.ChatListener;
 import com.anon.perfectUnityPlugin.HomeManager.GUIListener;
@@ -51,7 +53,23 @@ public class perfectUnityPlugin extends JavaPlugin {
         new Clock(this).runTaskTimer(this, 0L, 20L);
 
 
+        //Heads
+        getCommand("heads").setExecutor(new HeadsCommand(this));
+        getServer().getPluginManager().registerEvents(new HeadsGUIListener(this), this);
+
         getLogger().info("The perfectUnityPlugin is enabled!");
+    }
+
+    public YamlConfiguration getHeadsPlayerData(Player player) {
+        File file = new File(getDataFolder(), "heads/players/" + player.getUniqueId() + ".yml");
+        if (!file.exists()) return null;
+        return YamlConfiguration.loadConfiguration(file);
+    }
+
+    public YamlConfiguration getHeads() {
+        File file = new File(getDataFolder(), "heads/head_collection.yml");
+        if (!file.exists()) return null;
+        return YamlConfiguration.loadConfiguration(file);
     }
 
     public YamlConfiguration getHomeData(Player player) {

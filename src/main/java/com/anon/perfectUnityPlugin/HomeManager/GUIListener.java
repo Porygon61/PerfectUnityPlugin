@@ -116,7 +116,7 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onIconEditClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
-        if (!e.getView().getTitle().startsWith("Choose Icon:")) return;
+        if (!e.getView().getTitle().startsWith(ChatColor.stripColor("Choose Icon:"))) return;
         e.setCancelled(true);
 
         ItemStack clicked = e.getCurrentItem();
