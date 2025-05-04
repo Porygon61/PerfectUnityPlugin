@@ -38,18 +38,19 @@ public class HeadsGUIListener implements Listener {
         }
 
         String headName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
-        YamlConfiguration data = plugin.getHeadsGUIs().get(player.getUniqueId());
+        YamlConfiguration headsData = plugin.getHeadsGUIs().get(player.getUniqueId());
+        YamlConfiguration playerData = plugin.getHeadsPlayerData();
 
-        if (data == null || !data.contains(headName)) return;
+        if (headsData == null || !headsData.contains(headName)) return;
 
         switch (e.getClick()) {
             case LEFT:
-                GiveHead.giveSingleHead(player, headName);
+                GiveHead.giveSingleHead(player, headName, playerData);
                 player.closeInventory();
                 break;
 
             case RIGHT:
-                GiveHead.openAmountGUI(player, headName);
+                GiveHead.openAmountGUI(player, headName, playerData);
 
             default:
                 break;
