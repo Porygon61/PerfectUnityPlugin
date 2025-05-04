@@ -41,5 +41,4 @@ public class HeadsJoinListener implements Listener {
         }
     }
 
-    //TODO create the player file for validation
 }
