@@ -2,18 +2,22 @@ package com.anon.perfectUnityPlugin.HomeManager;
 
 import com.anon.perfectUnityPlugin.perfectUnityPlugin;
 import org.bukkit.Location;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 public class SetHomeCommand implements CommandExecutor {
 
     private final perfectUnityPlugin plugin;
-    public SetHomeCommand(perfectUnityPlugin plugin) { this.plugin = plugin; }
+
+    public SetHomeCommand(perfectUnityPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {

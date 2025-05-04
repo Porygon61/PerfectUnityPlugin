@@ -13,7 +13,8 @@ public class Clock extends BukkitRunnable {
 
     private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
+
     public Clock(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -23,10 +24,9 @@ public class Clock extends BukkitRunnable {
         String realTime = ChatColor.GOLD + "Real:" + ChatColor.WHITE + LocalTime.now().format(timeFormat);
 
 
-
         for (Player player : Bukkit.getOnlinePlayers()) {
             long ticks = player.getWorld().getTime(); // 0 to 24000
-            int hours = (int)((ticks / 1000 + 6) % 24); // +6 to shift 0 ticks = 6 AM
+            int hours = (int) ((ticks / 1000 + 6) % 24); // +6 to shift 0 ticks = 6 AM
             String mcTime = ChatColor.GRAY + "Time: " + hours + ":00";
 
             player.sendActionBar(realTime + mcTime);

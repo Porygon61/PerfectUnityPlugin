@@ -8,14 +8,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.io.File;
 import java.util.UUID;
 
 public class ChatListener implements Listener {
 
     private final perfectUnityPlugin plugin;
 
-    public ChatListener(perfectUnityPlugin plugin) { this.plugin = plugin; }
+    public ChatListener(perfectUnityPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {

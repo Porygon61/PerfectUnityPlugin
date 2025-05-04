@@ -10,9 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.*;
 
-import javax.management.monitor.CounterMonitor;
-import java.util.List;
-
 public class JoinListener implements Listener {
 
     @EventHandler
@@ -54,7 +51,7 @@ public class JoinListener implements Listener {
             int y = deathLoc.getBlockY();
             int z = deathLoc.getBlockZ();
 
-            coords =  x + ", " + y + ", " + z;
+            coords = x + ", " + y + ", " + z;
             // Use this in your scoreboard or message
         } else {
             coords = "Unknown";

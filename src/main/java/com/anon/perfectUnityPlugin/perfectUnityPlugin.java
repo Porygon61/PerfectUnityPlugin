@@ -4,8 +4,6 @@ import com.anon.perfectUnityPlugin.Heads.HeadsCommand;
 import com.anon.perfectUnityPlugin.Heads.HeadsGUIListener;
 import com.anon.perfectUnityPlugin.Heads.HeadsJoinListener;
 import com.anon.perfectUnityPlugin.HomeManager.*;
-import com.anon.perfectUnityPlugin.HomeManager.ChatListener;
-import com.anon.perfectUnityPlugin.HomeManager.GUIListener;
 import com.anon.perfectUnityPlugin.Scoreboard.Clock;
 import com.anon.perfectUnityPlugin.Scoreboard.JoinListener;
 import com.anon.perfectUnityPlugin.Scoreboard.ScoreboardUpdater;
@@ -15,9 +13,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class perfectUnityPlugin extends JavaPlugin {
@@ -76,6 +74,7 @@ public class perfectUnityPlugin extends JavaPlugin {
         }
         return file;
     }
+
     public YamlConfiguration getHeadsPlayerData(Player player) {
         return YamlConfiguration.loadConfiguration(getHeadsPlayerFile(player));
     }
@@ -93,14 +92,17 @@ public class perfectUnityPlugin extends JavaPlugin {
         }
         return file;
     }
+
     public YamlConfiguration getHeadsData() {
         return YamlConfiguration.loadConfiguration(getHeadsFile());
     }
 
 
-
     private final Map<UUID, YamlConfiguration> headGUIs = new HashMap<>();
-    public Map<UUID, YamlConfiguration> getHeadGUIs() { return headGUIs;}
+
+    public Map<UUID, YamlConfiguration> getHeadsGUIs() {
+        return headGUIs;
+    }
 
 
     // Homes
@@ -116,6 +118,7 @@ public class perfectUnityPlugin extends JavaPlugin {
         }
         return file;
     }
+
     public YamlConfiguration getHomeData(Player player) {
         return YamlConfiguration.loadConfiguration(getHomeFile(player));
     }
@@ -134,22 +137,26 @@ public class perfectUnityPlugin extends JavaPlugin {
 
 
     private final Map<UUID, YamlConfiguration> homeGUIs = new HashMap<>();
+
     public Map<UUID, YamlConfiguration> getHomeGUIs() {
         return homeGUIs;
     }
 
     // Home being edited by player
     private final Map<UUID, String> editSessions = new HashMap<>();
+
     public Map<UUID, String> getEditSessions() {
         return editSessions;
     }
 
     private final Map<UUID, String> iconSessions = new HashMap<>();
+
     public Map<UUID, String> getIconSessions() {
         return iconSessions;
     }
 
     private final Map<UUID, String> renameQueue = new HashMap<>();
+
     public Map<UUID, String> getRenameQueue() {
         return renameQueue;
     }

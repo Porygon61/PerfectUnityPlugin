@@ -10,13 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
-
 public class GUIListener implements Listener {
 
     private final perfectUnityPlugin plugin;
 
-    public GUIListener(perfectUnityPlugin plugin) { this.plugin = plugin; }
+    public GUIListener(perfectUnityPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {

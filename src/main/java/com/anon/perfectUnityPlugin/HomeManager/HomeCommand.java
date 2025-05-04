@@ -2,7 +2,9 @@ package com.anon.perfectUnityPlugin.HomeManager;
 
 import com.anon.perfectUnityPlugin.perfectUnityPlugin;
 import org.bukkit.*;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -10,14 +12,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeCommand implements CommandExecutor {
 
     private final perfectUnityPlugin plugin;
 
-    public HomeCommand(perfectUnityPlugin plugin) { this.plugin = plugin; }
+    public HomeCommand(perfectUnityPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
@@ -67,7 +71,7 @@ public class HomeCommand implements CommandExecutor {
     public void openHomeGUI(Player player, YamlConfiguration data, int page) {
         List<String> allHomes = (data == null) ? new ArrayList<>() : new ArrayList<>(data.getKeys(false));
 
-        int size =  plugin.getGuiSize();
+        int size = plugin.getGuiSize();
         int homesPerPage = plugin.getItemsPerPage();
         int totalPages = (int) Math.ceil(allHomes.size() / (double) homesPerPage);
 

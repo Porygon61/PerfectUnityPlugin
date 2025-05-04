@@ -13,7 +13,9 @@ import java.io.IOException;
 public class HeadsJoinListener implements Listener {
     private final perfectUnityPlugin plugin;
 
-    public HeadsJoinListener(perfectUnityPlugin plugin) { this.plugin = plugin; }
+    public HeadsJoinListener(perfectUnityPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -29,7 +31,7 @@ public class HeadsJoinListener implements Listener {
         data.set(name + ".owner-uuid", player.getUniqueId().toString());
         data.set(name + ".texture", Utility.getInstance().getBase64FromURL(player));
         data.set(name + ".display-color", "§6");
-        data.set(name + ".display", player.getName() + " Head");
+        data.set(name + ".display", player.getName());
 
         try {
             data.save(plugin.getHeadsFile());
@@ -38,4 +40,6 @@ public class HeadsJoinListener implements Listener {
 
         }
     }
+
+    //TODO create the player file for validation
 }

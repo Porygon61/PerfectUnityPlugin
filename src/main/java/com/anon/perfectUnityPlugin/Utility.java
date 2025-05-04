@@ -1,11 +1,12 @@
 package com.anon.perfectUnityPlugin;
 
-import java.util.Base64;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.profile.PlayerTextures;
+
+import java.util.Base64;
 
 public class Utility {
     private static Utility instance = new Utility();
@@ -14,7 +15,9 @@ public class Utility {
         instance = this;
     }
 
-    public static Utility getInstance() { return instance; }
+    public static Utility getInstance() {
+        return instance;
+    }
 
 
     public String getBase64FromURL(Player player) {
