@@ -2,6 +2,7 @@ package com.anon.perfectUnityPlugin;
 
 import com.anon.perfectUnityPlugin.Heads.HeadsCommand;
 import com.anon.perfectUnityPlugin.Heads.HeadsGUIListener;
+import com.anon.perfectUnityPlugin.Heads.HeadsJoinListener;
 import com.anon.perfectUnityPlugin.HomeManager.*;
 import com.anon.perfectUnityPlugin.HomeManager.ChatListener;
 import com.anon.perfectUnityPlugin.HomeManager.GUIListener;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +33,9 @@ public class perfectUnityPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig(); // Creates the config.yml file if missing
 
-        itemsPerPage = getConfig().getInt("homes.gui.pagination.items-per-page", 36);
+        itemsPerPage = getConfig().getInt("gui.pagination.items-per-page", 36);
         maxHomes = getConfig().getInt("homes.max-homes", -1);
-        guiSize = getConfig().getInt("homes.gui.gui-size", 45);
+        guiSize = getConfig().getInt("gui.gui-size", 45);
 
         //HomeManager
         getCommand("sethome").setExecutor(new SetHomeCommand(this));
@@ -56,32 +58,66 @@ public class perfectUnityPlugin extends JavaPlugin {
         //Heads
         getCommand("heads").setExecutor(new HeadsCommand(this));
         getServer().getPluginManager().registerEvents(new HeadsGUIListener(this), this);
+        getServer().getPluginManager().registerEvents(new HeadsJoinListener(this), this);
 
         getLogger().info("The perfectUnityPlugin is enabled!");
     }
 
-    public YamlConfiguration getHeadsPlayerData(Player player) {
+    // Heads
+    public File getHeadsPlayerFile(Player player) {
         File file = new File(getDataFolder(), "heads/players/" + player.getUniqueId() + ".yml");
-        if (!file.exists()) return null;
-        return YamlConfiguration.loadConfiguration(file);
+        try {
+            if (!file.exists()) {
+                file.getParentFile().mkdirs(); // Ensure 'heads/players/' directory exists
+                file.createNewFile();          // Create the YAML file
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    public YamlConfiguration getHeadsPlayerData(Player player) {
+        return YamlConfiguration.loadConfiguration(getHeadsPlayerFile(player));
     }
 
-    public YamlConfiguration getHeads() {
-        File file = new File(getDataFolder(), "heads/head_collection.yml");
-        if (!file.exists()) return null;
-        return YamlConfiguration.loadConfiguration(file);
+
+    public File getHeadsFile() {
+        File file = new File(getDataFolder(), "heads/heads.yml");
+        try {
+            if (!file.exists()) {
+                file.getParentFile().mkdirs(); // Ensure 'heads/' directory exists
+                file.createNewFile();          // Create the YAML file
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    public YamlConfiguration getHeadsData() {
+        return YamlConfiguration.loadConfiguration(getHeadsFile());
     }
 
-    public YamlConfiguration getHomeData(Player player) {
-        File file = new File(getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        if (!file.exists()) return null;
-        return YamlConfiguration.loadConfiguration(file);
-    }
 
+
+    private final Map<UUID, YamlConfiguration> headGUIs = new HashMap<>();
+    public Map<UUID, YamlConfiguration> getHeadGUIs() { return headGUIs;}
+
+
+    // Homes
     public File getHomeFile(Player player) {
         File file = new File(getDataFolder(), "homes/" + player.getUniqueId() + ".yml");
-        if (!file.exists()) return null;
+        try {
+            if (!file.exists()) {
+                file.getParentFile().mkdirs(); // Ensure 'homes/' directory exists
+                file.createNewFile();          // Create the YAML file
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return file;
+    }
+    public YamlConfiguration getHomeData(Player player) {
+        return YamlConfiguration.loadConfiguration(getHomeFile(player));
     }
 
     public int getItemsPerPage() {
@@ -108,7 +144,6 @@ public class perfectUnityPlugin extends JavaPlugin {
         return editSessions;
     }
 
-    // Home Icon being chosen
     private final Map<UUID, String> iconSessions = new HashMap<>();
     public Map<UUID, String> getIconSessions() {
         return iconSessions;
@@ -119,8 +154,8 @@ public class perfectUnityPlugin extends JavaPlugin {
         return renameQueue;
     }
 
+
     public static perfectUnityPlugin getInstance() {
         return instance;
     }
-
 }

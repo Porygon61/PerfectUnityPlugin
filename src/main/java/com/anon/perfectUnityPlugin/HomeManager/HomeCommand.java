@@ -67,7 +67,7 @@ public class HomeCommand implements CommandExecutor {
     public void openHomeGUI(Player player, YamlConfiguration data, int page) {
         List<String> allHomes = (data == null) ? new ArrayList<>() : new ArrayList<>(data.getKeys(false));
 
-        int size =  plugin.getConfig().getInt("gui-size", 54);
+        int size =  plugin.getGuiSize();
         int homesPerPage = plugin.getItemsPerPage();
         int totalPages = (int) Math.ceil(allHomes.size() / (double) homesPerPage);
 
@@ -112,7 +112,7 @@ public class HomeCommand implements CommandExecutor {
         }
 
         player.openInventory(gui);
-        perfectUnityPlugin.getInstance().getHomeGUIs().put(player.getUniqueId(), data);
+        plugin.getHomeGUIs().put(player.getUniqueId(), data);
     }
 
     private ItemStack navItem(Material material, String name) {

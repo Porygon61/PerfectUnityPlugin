@@ -9,6 +9,9 @@ commands:
   home:
     description: Open the Home Manager GUI or Teleport to a Home using the [name]
     usage: /home [name]
+  heads:
+    description: opens the heads gui
+    usage: /heads
 permissions:
   perfectUnityPlugin.use:
     default: true
