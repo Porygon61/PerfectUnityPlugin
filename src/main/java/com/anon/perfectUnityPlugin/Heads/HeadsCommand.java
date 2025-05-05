@@ -98,7 +98,6 @@ public class HeadsCommand implements CommandExecutor {
         String displayColor = headsData.getString(name + ".display-color", "§7");
         String displayName = headsData.getString(name + ".display", "Unknown Head");
         meta.setDisplayName(displayColor + displayName);
-        meta.setLore(List.of("§7Left-click to give 1", "§7Right-click to decide amount"));
 
 
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "CustomHead");
@@ -111,7 +110,7 @@ public class HeadsCommand implements CommandExecutor {
         return customHead;
     }
 
-    public ItemStack createPlayerHead(String name, YamlConfiguration headsData) {
+    public static ItemStack createPlayerHead(String name, YamlConfiguration headsData) {
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
 
@@ -120,7 +119,6 @@ public class HeadsCommand implements CommandExecutor {
 
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
         meta.setDisplayName(displayName);
-        meta.setLore(List.of("§7Left-click to give 1", "§7Right-click to decide amount"));
 
         playerHead.setItemMeta(meta);
         return playerHead;

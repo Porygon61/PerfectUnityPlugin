@@ -21,6 +21,7 @@ public class HeadsJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         saveHead(player);
+        createAuthorityFile(player);
     }
 
     public void saveHead(Player player) {
@@ -39,6 +40,11 @@ public class HeadsJoinListener implements Listener {
             e.printStackTrace();
 
         }
+    }
+
+    public void createAuthorityFile(Player player) {
+        YamlConfiguration data = plugin.getHeadsPlayerData(player);
+        //TODO file creation
     }
 
 }

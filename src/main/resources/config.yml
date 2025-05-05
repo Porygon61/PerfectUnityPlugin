@@ -10,12 +10,13 @@ homes:
 
 heads:
   access-authorization: true # If a player should be able to access the heads GUI
-  possession-authorization: true # If authorization system for retrieval should be enabled: if false, then everyone can retrieve infinite amounts
-  authorization: # Classes of authorization ( How many heads a person is allowed to receive )
-    standard: -1 # What should be the standard for everyone if auth system is enabled and not yet customized per player
-    unlimited: -1
-    mod: 100
-    supporter: 50
-    senior: 20
-    beginner: 5
-    new: 2
+  give-authorization: true # If authorization system for retrieval should be enabled: if false, then everyone can retrieve infinite amounts
+  authorization:
+    give-amount: # Classes of authorization ( How many heads a person is allowed to receive )
+      standard: -1 # What should be the standard for everyone if auth system is enabled and not yet customized per player
+      unlimited: -1
+      mod: 100
+      supporter: 50
+      senior: 20
+      beginner: 5
+      new: 2

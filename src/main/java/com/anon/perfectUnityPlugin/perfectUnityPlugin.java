@@ -99,9 +99,13 @@ public class perfectUnityPlugin extends JavaPlugin {
 
 
     private final Map<UUID, YamlConfiguration> headGUIs = new HashMap<>();
-
     public Map<UUID, YamlConfiguration> getHeadsGUIs() {
         return headGUIs;
+    }
+
+    private final Map<UUID, String> amountSetSession = new HashMap<>();
+    public Map<UUID, String> getAmountSetSession() {
+        return amountSetSession;
     }
 
 
@@ -137,26 +141,21 @@ public class perfectUnityPlugin extends JavaPlugin {
 
 
     private final Map<UUID, YamlConfiguration> homeGUIs = new HashMap<>();
-
     public Map<UUID, YamlConfiguration> getHomeGUIs() {
         return homeGUIs;
     }
 
-    // Home being edited by player
     private final Map<UUID, String> editSessions = new HashMap<>();
-
     public Map<UUID, String> getEditSessions() {
         return editSessions;
     }
 
     private final Map<UUID, String> iconSessions = new HashMap<>();
-
     public Map<UUID, String> getIconSessions() {
         return iconSessions;
     }
 
     private final Map<UUID, String> renameQueue = new HashMap<>();
-
     public Map<UUID, String> getRenameQueue() {
         return renameQueue;
     }
