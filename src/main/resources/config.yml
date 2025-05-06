@@ -9,14 +9,17 @@ homes:
   max-homes: -1 # -1 = unlimited, or set a number to limit
 
 heads:
-  access-authorization: true # If a player should be able to access the heads GUI
-  give-authorization: true # If authorization system for retrieval should be enabled: if false, then everyone can retrieve infinite amounts
-  authorization:
-    give-amount: # Classes of authorization ( How many heads a person is allowed to receive )
-      standard: -1 # What should be the standard for everyone if auth system is enabled and not yet customized per player
+  access-permission: true # If a player should be able to access the heads GUI
+  give-permission: true # If permission system for retrieval should be enabled: if false, then everyone can retrieve infinite amounts
+  settings:
+    balance-class: # Initial Head-Receive Balance
+      default: -1 # What should be the standard for everyone if auth system is enabled and not yet customized per player
       unlimited: -1
       mod: 100
       supporter: 50
       senior: 20
       beginner: 5
       new: 2
+    allowance:
+      enabled: false # If true, player receives the set amount (class) in the set frequency
+      frequency: weekly # How often the allowance is paid ( Valid: weekly , monthly , yearly )

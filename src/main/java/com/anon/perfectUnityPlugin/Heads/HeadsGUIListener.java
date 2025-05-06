@@ -104,7 +104,7 @@ public class HeadsGUIListener implements Listener {
 
         switch (action) {
             case "CONFIRM":
-                int max = playerData.getInt("give-amount", -1);
+                int max = playerData.getInt("balance", -1);
                 if (max >= 0 && amount > max) {
                     player.sendMessage("You can't get more than " + max);
                     return;
