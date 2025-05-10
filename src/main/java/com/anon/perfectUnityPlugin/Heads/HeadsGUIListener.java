@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.HashMap;
@@ -57,11 +58,11 @@ public class HeadsGUIListener implements Listener {
 
         switch (e.getClick()) {
             case LEFT:
-                if (Objects.equals(playerData.get("give-authority"), false)) {
+                if (Objects.equals(playerData.get("give-permission"), false)) {
                     player.sendMessage("You are not authorized to receive Heads");
-                    break;}
+                    break;
+                }
                 SetAmount.openGiveGUI(player, headName, headsData);
-                player.closeInventory();
                 break;
 
             case RIGHT:
@@ -82,49 +83,64 @@ public class HeadsGUIListener implements Listener {
         ItemStack clicked = e.getCurrentItem();
         if (clicked == null || !clicked.hasItemMeta()) return;
 
+        String action = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
         String headName = plugin.getAmountSetSession().get(player.getUniqueId());
         if (headName == null) return;
 
-        String action = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
         YamlConfiguration playerData = plugin.getHeadsPlayerData(player);
         YamlConfiguration headsData = plugin.getHeadsData();
 
-        String name = clicked.getItemMeta().getDisplayName();
-        String type = headsData.getString(name + ".type");
-        ItemStack headItem = null;
-
-        if ("player".equalsIgnoreCase(type)) {
-            headItem = createPlayerHead(name, headsData);
-        } else if ("custom".equalsIgnoreCase(type)) {
-            headItem = createCustomHead(name, headsData);
-        }
-
-        // Get current amount or default to 1
         int amount = giveAmounts.getOrDefault(player.getUniqueId(), 1);
 
-        switch (action) {
-            case "CONFIRM":
-                int max = playerData.getInt("balance", -1);
-                if (max >= 0 && amount > max) {
-                    player.sendMessage("You can't get more than " + max);
+        switch (action.toLowerCase()) {
+            case "confirm":
+                String type = headsData.getString(headName + ".type");
+                ItemStack headItem = null;
+
+                if ("player".equalsIgnoreCase(type)) {
+                    headItem = createPlayerHead(headName, headsData);
+                } else if ("custom".equalsIgnoreCase(type)) {
+                    headItem = createCustomHead(headName, headsData);
+                }
+
+                if (headItem == null) {
+                    player.sendMessage(ChatColor.RED + "Could not create head.");
                     return;
                 }
+
+                int max = playerData.getInt("balance", -1);
+                if (max >= 0 && amount > max) {
+                    player.sendMessage(ChatColor.RED + "You can't get more than " + max);
+                    return;
+                }
+
                 headItem.setAmount(amount);
                 player.getInventory().addItem(headItem);
-                giveAmounts.remove(player.getUniqueId()); // Clear session
+
+                giveAmounts.remove(player.getUniqueId());
+                plugin.getAmountSetSession().remove(player.getUniqueId());
+                player.closeInventory();
                 break;
-            case "Increase":
+
+            case "increase":
                 amount++;
                 giveAmounts.put(player.getUniqueId(), amount);
+                updateAmountDisplay(e, amount);
+                break;
 
-            case "Decrease":
+            case "decrease":
                 if (amount > 1) amount--;
                 giveAmounts.put(player.getUniqueId(), amount);
-
+                updateAmountDisplay(e, amount);
+                break;
         }
+    }
 
-        plugin.getAmountSetSession().remove(player.getUniqueId());
-
-        player.closeInventory();
+    private void updateAmountDisplay(InventoryClickEvent e, int amount) {
+        ItemStack amountDisplay = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta meta = amountDisplay.getItemMeta();
+        meta.setDisplayName("§eAmount: §f" + amount);
+        amountDisplay.setItemMeta(meta);
+        e.getInventory().setItem(4, amountDisplay);
     }
 }

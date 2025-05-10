@@ -32,10 +32,53 @@ public class HeadsCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) return true;
 
         YamlConfiguration headsData = plugin.getHeadsData();
+        YamlConfiguration playerData = plugin.getHeadsPlayerData(player);
 
-        //args come here if needed
+        if (!playerData.getBoolean("access-permission")) {
+            player.sendMessage("You are not allowed to use the heads Command");
+            return true;
+        }
 
-        openHeadsGUI(player, headsData, 0);
+        if (args.length == 0) {
+            openHeadsGUI(player, plugin.getHeadsData(), 0);
+            return true;
+        }
+
+        if (args.length <= 2) {
+            String headName = args[0].toLowerCase();
+            int amount = 1;
+            if (args.length == 2) {
+                try {
+                    amount = Integer.parseInt(args[1]);
+                } catch (NumberFormatException ex) {
+                    player.sendMessage("Amount must be a number.");
+                    return true;
+                }
+            }
+            if (!headsData.contains(headName)) {
+                player.sendMessage("Head '" + headName + "' does not exist.");
+                return true;
+            }
+            if (playerData.getInt("balance") < amount) {
+                player.sendMessage("You don't have enough money to get this amount.");
+            }
+
+            String type = headsData.getString(headName + ".type");
+            ItemStack headItem = null;
+            if ("player".equalsIgnoreCase(type)) {
+                headItem = createPlayerHead(headName, headsData);
+            } else if ("custom".equalsIgnoreCase(type)) {
+                headItem = createCustomHead(headName, headsData);
+            }
+            if (headItem != null) {
+                headItem.setAmount(amount);
+                player.getInventory().addItem(headItem);
+                player.sendMessage("You received §a" + amount + "x " + headName);
+            }
+            return true;
+        }
+        // Too many args
+        player.sendMessage("Usage: /heads [<name> [amount]]");
         return true;
     }
 

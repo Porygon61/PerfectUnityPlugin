@@ -25,7 +25,15 @@ public class SetAmount {
         ItemMeta increaseMeta = increase.getItemMeta();
         increaseMeta.setDisplayName("§2§oIncrease");
         increase.setItemMeta(increaseMeta);
-        gui.setItem(12, increase);
+        gui.setItem(11, increase);
+
+        // Amount
+        int initialAmount = 1;
+        ItemStack amount = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta amountMeta = amount.getItemMeta();
+        amountMeta.setDisplayName("§eAmount: §f" + initialAmount);
+        amount.setItemMeta(amountMeta);
+        gui.setItem(4, amount);
 
         // Confirm
         String type = headsData.getString(headName + ".type");
@@ -37,14 +45,14 @@ public class SetAmount {
         }
 
         ItemStack confirm = headItem;
-        gui.setItem(14, confirm);
+        gui.setItem(13, confirm);
 
         // Decrease
         ItemStack decrease = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta decreaseMeta = decrease.getItemMeta();
-        decreaseMeta.setDisplayName("§2§oDecrease");
+        decreaseMeta.setDisplayName("§c§oDecrease");
         decrease.setItemMeta(decreaseMeta);
-        gui.setItem(16, decrease);
+        gui.setItem(15, decrease);
 
         player.openInventory(gui);
         perfectUnityPlugin.getInstance().getAmountSetSession().put(player.getUniqueId(), headName);

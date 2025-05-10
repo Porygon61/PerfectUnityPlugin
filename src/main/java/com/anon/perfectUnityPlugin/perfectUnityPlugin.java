@@ -1,8 +1,6 @@
 package com.anon.perfectUnityPlugin;
 
-import com.anon.perfectUnityPlugin.Heads.HeadsCommand;
-import com.anon.perfectUnityPlugin.Heads.HeadsGUIListener;
-import com.anon.perfectUnityPlugin.Heads.HeadsJoinListener;
+import com.anon.perfectUnityPlugin.Heads.*;
 import com.anon.perfectUnityPlugin.HomeManager.*;
 import com.anon.perfectUnityPlugin.Scoreboard.Clock;
 import com.anon.perfectUnityPlugin.Scoreboard.JoinListener;
@@ -42,7 +40,6 @@ public class perfectUnityPlugin extends JavaPlugin {
         getCommand("home").setExecutor(new HomeCommand(this));
         getCommand("home").setTabCompleter(new HomeTabCompleter(this));
 
-
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
 
@@ -55,9 +52,17 @@ public class perfectUnityPlugin extends JavaPlugin {
 
         //Heads
         getCommand("heads").setExecutor(new HeadsCommand(this));
+        getCommand("heads").setTabCompleter(new HeadsTabCompleter(this));
+
+        getCommand("cchead").setExecutor(new CCHeadCommand(this));
+        getCommand("cchead").setTabCompleter(new CCHeadTabCompleter(this));
+
+
         getServer().getPluginManager().registerEvents(new HeadsGUIListener(this), this);
         getServer().getPluginManager().registerEvents(new HeadsJoinListener(this), this);
 
+
+        //
         getLogger().info("The perfectUnityPlugin is enabled!");
     }
 
