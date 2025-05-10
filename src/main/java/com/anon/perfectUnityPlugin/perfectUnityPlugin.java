@@ -5,12 +5,16 @@ import com.anon.perfectUnityPlugin.HomeManager.*;
 import com.anon.perfectUnityPlugin.Scoreboard.Clock;
 import com.anon.perfectUnityPlugin.Scoreboard.JoinListener;
 import com.anon.perfectUnityPlugin.Scoreboard.ScoreboardUpdater;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -19,8 +23,8 @@ import java.util.UUID;
 public class perfectUnityPlugin extends JavaPlugin {
 
     private static perfectUnityPlugin instance;
+    private final Map<String, PlayerProfile> headProfiles = new HashMap<>();
     private int itemsPerPage;
-    private int maxPages;
     private int guiSize;
     private int maxHomes;
 
@@ -28,6 +32,7 @@ public class perfectUnityPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig(); // Creates the config.yml file if missing
+        loadHeadProfiles();
 
         itemsPerPage = getConfig().getInt("gui.pagination.items-per-page", 36);
         maxHomes = getConfig().getInt("homes.max-homes", -1);
@@ -67,6 +72,25 @@ public class perfectUnityPlugin extends JavaPlugin {
     }
 
     // Heads
+    private void loadHeadProfiles() {
+        YamlConfiguration headsData = getHeadsData();
+        for (String name : headsData.getKeys(false)) {
+            String texture = headsData.getString(name + ".texture");
+            if (texture == null || texture.isEmpty()) continue;
+
+            // deterministic UUID from name:
+            UUID id = UUID.nameUUIDFromBytes(("perfectUnity:" + name).getBytes(StandardCharsets.UTF_8));
+            PlayerProfile prof = Bukkit.createProfile(id, "CustomHead");
+            prof.getProperties().add(new ProfileProperty("textures", texture));
+
+            headProfiles.put(name, prof);
+        }
+    }
+    public PlayerProfile getHeadProfile(String name) {
+        return headProfiles.get(name);
+    }
+    public Map<String, PlayerProfile> getHeadProfiles() { return headProfiles; }
+
     public File getHeadsPlayerFile(Player player) {
         File file = new File(getDataFolder(), "heads/players/" + player.getUniqueId() + ".yml");
         try {

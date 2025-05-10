@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class HeadsCommand implements CommandExecutor {
                 player.sendMessage("Head '" + headName + "' does not exist.");
                 return true;
             }
-            if (playerData.getInt("balance") < amount) {
+            if (playerData.getInt("balance") < amount && !(playerData.getInt("balance") == -1)  ) {
                 player.sendMessage("You don't have enough money to get this amount.");
             }
 
@@ -143,10 +144,16 @@ public class HeadsCommand implements CommandExecutor {
         meta.setDisplayName(displayColor + displayName);
 
 
-        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "CustomHead");
-        String texture = headsData.getString(name + ".texture");
-        if (texture == null || texture.isEmpty()) return null;
-        profile.getProperties().add(new ProfileProperty("textures", texture));
+        PlayerProfile profile = perfectUnityPlugin.getInstance().getHeadProfile(name);
+        if (profile == null) {
+            // it wasn’t in the map—must’ve been added at runtime!
+            String texture = headsData.getString(name + ".texture", "");
+            UUID id = UUID.nameUUIDFromBytes(("perfectUnity:" + name).getBytes(StandardCharsets.UTF_8));
+            profile = Bukkit.createProfile(id, "CustomHead");
+            profile.getProperties().add(new ProfileProperty("textures", texture));
+            // cache it so next time it’s found immediately
+            perfectUnityPlugin.getInstance().getHeadProfiles().put(name, profile);
+        }
 
         meta.setOwnerProfile(profile);
         customHead.setItemMeta(meta);

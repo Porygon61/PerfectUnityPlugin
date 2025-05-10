@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class SetAmount {
@@ -64,10 +65,16 @@ public class SetAmount {
 
         meta.setDisplayName("§a§lCONFIRM");
 
-        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "CustomHead");
-        String texture = headsData.getString(name + ".texture");
-        if (texture == null || texture.isEmpty()) return null;
-        profile.getProperties().add(new ProfileProperty("textures", texture));
+        PlayerProfile profile = perfectUnityPlugin.getInstance().getHeadProfile(name);
+        if (profile == null) {
+            // it wasn’t in the map—must’ve been added at runtime!
+            String texture = headsData.getString(name + ".texture", "");
+            UUID id = UUID.nameUUIDFromBytes(("perfectUnity:" + name).getBytes(StandardCharsets.UTF_8));
+            profile = Bukkit.createProfile(id, "CustomHead");
+            profile.getProperties().add(new ProfileProperty("textures", texture));
+            // cache it so next time it’s found immediately
+            perfectUnityPlugin.getInstance().getHeadProfiles().put(name, profile);
+        }
 
         meta.setOwnerProfile(profile);
         customHead.setItemMeta(meta);
